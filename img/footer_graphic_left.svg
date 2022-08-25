@@ -1,0 +1,27 @@
+<svg width="440" height="270" viewBox="0 0 440 270" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_f_92_4)">
+<rect x="115" y="270" width="115" height="115" rx="20" transform="rotate(-180 115 270)" fill="#6A7E6A"/>
+</g>
+<line x1="212.5" y1="156" x2="212.5" y2="115" stroke="#E96D5E" stroke-width="5"/>
+<line x1="114" y1="212.5" x2="156" y2="212.5" stroke="#E96D5E" stroke-width="5"/>
+<line x1="269" y1="212.5" x2="314" y2="212.5" stroke="#E96D5E" stroke-width="5"/>
+<rect x="270" y="270" width="115" height="115" rx="57.5" transform="rotate(-180 270 270)" fill="white"/>
+<g filter="url(#filter1_f_92_4)">
+<rect x="425" y="270" width="115" height="115" rx="20" transform="rotate(-180 425 270)" fill="#FFE69D"/>
+</g>
+<rect x="425" y="270" width="115" height="115" rx="20" transform="rotate(-180 425 270)" fill="#FFE69D"/>
+<rect x="271" y="115" width="115" height="115" rx="20" transform="rotate(-180 271 115)" fill="#FF4630" fill-opacity="0.7"/>
+<rect x="115" y="270" width="115" height="115" rx="20" transform="rotate(-180 115 270)" fill="#6A7E6A"/>
+<defs>
+<filter id="filter0_f_92_4" x="-15" y="140" width="145" height="145" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="7.5" result="effect1_foregroundBlur_92_4"/>
+</filter>
+<filter id="filter1_f_92_4" x="295" y="140" width="145" height="145" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="7.5" result="effect1_foregroundBlur_92_4"/>
+</filter>
+</defs>
+</svg>

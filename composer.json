@@ -1,0 +1,14 @@
+{
+  "name": "mand8ate/omni-labs-digital-landing",
+  "authors": [
+    {
+      "name": "mand8ate",
+      "email": "mand8ate@gmail.com"
+    }
+  ],
+  "require": {
+    "sendgrid/sendgrid": "~7",
+    "vlucas/phpdotenv": "^5.4",
+    "ext-mbstring": "*"
+  }
+}
