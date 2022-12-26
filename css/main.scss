@@ -1,15 +1,29 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap");
 
 html {
   scroll-behavior: smooth;
 }
 
-body {
+body:lang(en) {
   height: 100vh;
-  font-family: "Poppins";
+  font-family: "Poppins", sans-serif;
   margin: 0;
   box-sizing: border-box;
   overflow-x: hidden;
+}
+
+body:lang(ja) {
+  height: 100vh;
+  font-family: "Noto Sans JP", sans-serif;
+  margin: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  font-size: 95%;
+}
+
+.pop {
+  font-family: "Poppins", sans-serif
 }
 
 ul {
@@ -65,6 +79,27 @@ p.subtitle {
   a:hover {
     color: #f3bf24;
   }
+}
+
+.btn-lang {
+  border: none;
+  background: none;
+  color: #ffe69d;
+  cursor: pointer;
+}
+
+.btn-lang:hover {
+  color: #f3bf24;
+}
+
+.btn-lang-mobile {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  border: none;
+  background: none;
+  color: #ffe69d;
+  cursor: pointer;
 }
 
 header {
@@ -143,7 +178,7 @@ nav.mobile {
   }
 
   .line-two {
-    padding-left: 15px;
+    padding-left: 55px;
   }
 }
 
@@ -641,7 +676,7 @@ footer {
     z-index: 1000;
 
     nav {
-      display: block;
+      display: flex;
 
       ul {
         display: flex;
@@ -1087,7 +1122,7 @@ footer {
         }
 
         .line-two {
-          padding-left: 18px;
+          padding-left: 75px;
         }
       }
     }

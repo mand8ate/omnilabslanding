@@ -104,13 +104,3 @@ window.addEventListener("scroll", () => {
 
   lastScroll = currentScroll;
 });
-
-const languageButton = document.getElementById("language-button");
-
-languageButton.addEventListener("click", () => {
-  if (languageButton.innerHTML === "En/Ja") {
-    window.location.href = "index-ja.html";
-  } else {
-    window.location.href = "index.html"
-  }
-});
