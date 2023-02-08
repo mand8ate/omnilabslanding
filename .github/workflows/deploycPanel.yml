@@ -17,3 +17,5 @@ jobs:
         ftp-server: ftp.giftbox-e.com
         ftp-username: omnilabsdigital@omnilabs.digital
         ftp-password: ${{ secrets.ftp_password }}
+        protocol: ftps
+        port: 21
