@@ -363,10 +363,14 @@ section {
     margin-bottom: 7em;
 
     .projects-circle {
-      background: url("../img/omnihon_img.png");
-      background-size: contain;
+        background: url("../img/sbooster_logo.svg"), radial-gradient(rgb(135,206,235,0.5), rgba(135,206,235,0.5));
+        background-blend-mode: overlay;
+        background-size: contain;
+        border-radius: 50%;  // Makes the background circular
     }
-  }
+}
+
+
 
   &.two {
     margin-bottom: 7em;
