@@ -2,43 +2,48 @@
 require 'vendor/autoload.php';
 
 try {
-	$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-	$dotenv->load();
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
 } catch (Exception $e) {
-	echo "Caught exception: ", $e->getMessage(), "\n";
+    error_log("Unable to load .env file. Error: " . $e->getMessage());
+    exit;
 }
 
 if (isset($_POST["submit"])) {
-	$name = $_POST["name"];
-	$from = $_POST["email"];
-	$message = $_POST["message"];
 
-	$sgMail = new \SendGrid\Mail\Mail();
-	$sgMail->setFrom("malte@omnilabs.digital", "Contact Form");
-	$sgMail->setSubject("Omnilabs Contact Form");
-	$sgMail->addTo("malte@omnilabs.digital", "Malte");
-	$sgMail->addContent("text/plain", "Omnilabs Contact Form Inquiry");
-	$sgMail->addContent(
-		"text/html",
-		"<h1>User:<br></br>$name, Email: $from</h1><br></br><h2>Message:<br></br>$message</h2>"
-	);
+    // sanitize POST variables
+    $name = htmlspecialchars($_POST["name"], ENT_QUOTES, 'UTF-8');
+    $from = filter_var($_POST["email"], FILTER_SANITIZE_EMAIL);
+    $message = htmlspecialchars($_POST["message"], ENT_QUOTES, 'UTF-8');
 
-	if ($_ENV["SENDGRID_API_KEY"]) {
-		$apiKey = $_ENV["SENDGRID_API_KEY"];
-	}
+    $sgMail = new \SendGrid\Mail\Mail();
+    $sgMail->setFrom("malte@omnilabs.digital", "Contact Form");
+    $sgMail->setSubject("Omnilabs Contact Form");
+    $sgMail->addTo("malte@omnilabs.digital", "Malte");
+    $sgMail->addContent("text/plain", "Omnilabs Contact Form Inquiry");
+    $sgMail->addContent(
+        "text/html",
+        "<h1>User:<br></br>$name, Email: $from</h1><br></br><h2>Message:<br></br>$message</h2>"
+    );
 
-	if (getenv("SENDGRID_API_KEY")) {
-		$apiKey = getenv("SENDGRID_API_KEY");
-	}
+    $apiKey = $_ENV["SENDGRID_API_KEY"] ?? null;
 
-	$apiKey = getenv("SENDGRID_API_KEY");
+    if (!$apiKey) {
+        error_log("SENDGRID_API_KEY not found in .env");
+        exit;
+    }
 
-	$sendgrid = new \SendGrid($apiKey);
+    try {
+        $sendgrid = new \SendGrid($apiKey);
+        $response = $sendgrid->send($sgMail);
 
-	if ($sendgrid->send($sgMail)) {
-		header("Location: index.html");
-		// echo "email sent";
-	} else {
-		echo "Something went wrong. Please try again.";
-	}
+        if ($response->statusCode() >= 200 && $response->statusCode() < 300) {
+            header("Location: index.html");
+            exit;
+        } else {
+            error_log("Email not sent. SendGrid response code: " . $response->statusCode());
+        }
+    } catch (Exception $e) {
+        error_log("SendGrid Exception: " . $e->getMessage());
+    }
 }
