@@ -1,6 +1,6 @@
 # Omni Labs Digital
 
-Static HTML/CSS/JavaScript with a JavaScript Cloudflare Pages Function at `/api/contact`. No PHP, Composer, database or runtime SDK dependencies. SendGrid remains the email provider, accessed through its HTTP API.
+Static HTML/CSS/JavaScript with a JavaScript Cloudflare Worker at `/api/contact`. No PHP, Composer, database or runtime SDK dependencies. SendGrid remains the email provider, accessed through its HTTP API.
 
 ## Local checks
 
@@ -23,22 +23,40 @@ Fill `.dev.vars` locally with the private SendGrid API key and Turnstile secret.
 
 A plain static server can preview `dist/`, but cannot execute the function.
 
-## Deploy to Cloudflare Pages
+## Deploy to Cloudflare Workers (recommended for the current setup)
 
-1. Create a Pages project connected to this repository. Set the production branch to `main`, build command to `npm run build`, and output directory to `dist`. Use Node.js 22. Cloudflare discovers `functions/` at the repository root; do not upload only `dist/` through the dashboard's static drag-and-drop flow.
-2. Create a Turnstile widget for the production hostnames. Add `TURNSTILE_SITE_KEY` as a public build variable. Configure a separate widget and allowed hostname for previews if the form should work there.
-3. Add encrypted runtime secrets `TURNSTILE_SECRET_KEY` and `SENDGRID_API_KEY` under Pages Settings → Variables and Secrets. Set them separately for production and previews. Redeploy after configuration changes. The sender `malte@omnilabs.digital` must be verified in SendGrid; give the API key only the mail-send permission it needs.
-4. Test the Pages deployment before changing DNS: valid submission, failed verification and provider failure. The function checks the Turnstile action `contact` and requires the verified hostname to match the incoming request hostname. A provider acceptance response is not an inbox-delivery guarantee.
-5. Add `omnilabs.digital` as a Pages custom domain using Cloudflare's guided DNS setup. Preserve existing MX, SPF, DKIM and DMARC records. Keep the existing site online until staging checks pass. No account, DNS or production deployment changes were made by this implementation.
-6. Enable an edge rate-limit rule for POST requests to `/api/contact` if available on your Cloudflare plan. Turnstile, origin checks, a honeypot, bounded input and fixed recipients are included; the function does not pretend an in-memory counter is a reliable distributed rate limiter.
+The default `wrangler.toml` defines `worker/index.js` as the entry point and `dist/` as static assets. This supports the standard `npx wrangler deploy` command used by Workers Builds. The Worker routes `/api/contact` to the shared contact handler; static assets are served directly.
 
-The old automatic FTP/cPanel workflow was replaced by validation-only CI. Cloudflare Git integration owns deployment after it is connected. The GitHub `TURNSTILE_SITE_KEY` repository variable is optional for CI; the Cloudflare build variable controls the actual deployment.
+In the Worker’s Git build settings use:
 
-If using the CLI instead of Git integration, build first and run `npx wrangler pages deploy dist` from the repository root so Wrangler includes `functions/`.
+- Build command: `npm run build`
+- Deploy command: `npx wrangler deploy`
+- Root directory: repository root
+- Node.js: 22
+
+The existing Cloudflare Worker name must match `name` in `wrangler.toml` (`omnilabs-digital`), or change the config to the name you selected in Cloudflare.
+
+1. Create a Turnstile widget for the production hostname. Add its public `TURNSTILE_SITE_KEY` to the Worker’s **build variables**. Without it, the build deliberately shows email contact instead of the form.
+2. Add `TURNSTILE_SECRET_KEY` and `SENDGRID_API_KEY` as **runtime secrets** in the Worker settings. Configure preview environments separately if needed. Never add private keys to the public HTML or repository. Verify `malte@omnilabs.digital` as a SendGrid sender.
+3. Deploy and test the generated workers.dev address before attaching the domain. Allow that hostname in the Turnstile widget if testing the form there. The function requires verified hostname and action `contact` to match.
+4. Add `omnilabs.digital` as a custom domain only after staging checks pass. Preserve MX, SPF, DKIM and DMARC records. Retain the old site until cutover is verified. The agent does not access Cloudflare automatically; login, deployment, secrets and DNS setup remain user-managed.
+5. Consider an edge rate-limit rule for POST `/api/contact` if available on your plan. Turnstile, origin checks, a honeypot and bounded input are included; there is no in-memory distributed rate-limit counter.
+
+For a manual CLI deployment, run `npm run deploy` after you authenticate Wrangler yourself. This builds and deploys the site. GitHub CI only validates the repository; Cloudflare Git integration deploys it once configured.
+
+### Alternative: Cloudflare Pages
+
+Pages support remains available through `wrangler.pages.toml` and `functions/api/contact.js`. Create a Pages project with build command `npm run build` and output `dist`; explicitly select `wrangler.pages.toml` for CLI commands:
+
+```sh
+npx wrangler pages deploy dist --config wrangler.pages.toml
+```
+
+Do not use `wrangler deploy` with the Pages config. Do not upload only `dist/` with the dashboard’s static drag-and-drop flow: that does not include Pages Functions. Set the same public build variable and runtime secrets described above.
 
 ## Security and behavior
 
-- Only `/api/contact` invokes a function; other assets remain static through `_routes.json`.
+- Worker-first routing covers `/api/*` and retired PHP URLs. Other assets are served directly. Pages uses `_routes.json`; Workers excludes that Pages-only file from public assets.
 - Browser submissions use a standard URL-encoded POST and redirect back to the contact section with a status message. JavaScript is required for Turnstile, with a visible email alternative.
 - Secrets stay in function bindings. Visitor email is used only as Reply-To; sender and recipient are fixed. Messages are plain text.
 - Actual streamed bodies are capped at 64 KB, with field limits, duplicate-field rejection, same-origin checks, verification timeouts and generic delivery errors.

@@ -33,4 +33,5 @@ for (const name of await readdir(path.join(root, 'img'))) {
     await cp(path.join(root, 'img', name), path.join(dist, 'img', name));
   }
 }
-console.log('Static site built in dist/. Cloudflare compiles functions/ separately.');
+await writeFile(path.join(dist, '.assetsignore'), '_routes.json\n');
+console.log('Static site built in dist/. Worker entry point: worker/index.js.');

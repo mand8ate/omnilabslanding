@@ -5,7 +5,11 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node --test",
-    "dev": "npx wrangler pages dev dist"
+    "dev": "npx wrangler dev",
+    "deploy": "npm run build && npx wrangler deploy",
+    "dev:pages": "npx wrangler pages dev dist --config wrangler.pages.toml"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  }
 }
