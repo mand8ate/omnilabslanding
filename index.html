@@ -37,13 +37,7 @@
   <div class="nav-container">
     <header>
       <a href="/" class="brand" aria-label="Omni Labs Digital home">
-        <svg class="brand-mark" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-          <rect x="2" y="2" width="15" height="15" rx="4" fill="#FFE69D"/>
-          <rect x="23" y="2" width="15" height="15" rx="7.5" fill="#E96D5E"/>
-          <rect x="2" y="23" width="15" height="15" rx="7.5" fill="#AFC8AF"/>
-          <rect x="23" y="23" width="15" height="15" rx="4" fill="#FFE69D"/>
-        </svg>
-        <span class="brand-text"><span class="brand-name">omni<span class="brand-dot">.</span></span><span class="brand-caption">LABS DIGITAL</span></span>
+        <span class="brand-text"><span class="brand-name">Omni</span><span class="brand-caption">Labs Digital</span></span>
       </a>
 
       <nav aria-label="Main navigation">
@@ -56,12 +50,16 @@
       </nav>
 
       <div class="header-actions">
-        <nav class="language-switch" aria-label="Language">
-          <a href="/" lang="en" hreflang="en" data-language="en" aria-label="English" aria-current="page">EN</a>
-          <a href="/ja/" lang="ja" hreflang="ja" data-language="ja" aria-label="Japanese">JP</a>
-        </nav>
-        <a href="#contact" class="header-contact">Let’s talk <span aria-hidden="true">↗</span></a>
+        <label class="language-control">
+          <span class="sr-only">Language</span>
+          <select id="language-select" aria-label="Language">
+            <option value="en" selected>English</option>
+            <option value="ja">日本語</option>
+          </select>
+        </label>
+        <noscript><nav aria-label="Language"><a href="/" lang="en">EN</a> / <a href="/ja/" lang="ja">JP</a></nav></noscript>
       </div>
+      <a href="/" class="logo-header-right" aria-label="Omni Labs Digital home"><img src="/img/omni_logo.png" alt="Omni Labs Digital logo" width="256" height="128" decoding="async"></a>
     </header>
   </div>
   <!-- mobile nav start -->
@@ -573,6 +571,9 @@
     </div>
   </footer>
   <!-- contact-script -->
+  <script src="/js/gsap.min.js" defer></script>
+  <script src="/js/ScrollTrigger.min.js" defer></script>
+  <script src="/js/motion.js" defer></script>
   <script src="/js/index.js" defer></script>
 </body>
 

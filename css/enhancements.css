@@ -165,3 +165,32 @@ html[lang="ja"] .motion-toggle { font-size: 10px; }
  html[lang="ja"] nav.mobile span { white-space: nowrap; }
  html[lang="ja"] nav.mobile ul img { width: 26px; height: 26px; margin: .4rem; }
 }
+
+/* Original wordmark and right-hand logo, with a native language selector. */
+.nav-container header { gap: clamp(.75rem, 2vw, 2rem); }
+header a.brand { gap: 0; min-width: 130px; }
+.brand-name { font-size: 30px; line-height: 1; letter-spacing: -.025em; color: #ffe69d; font-weight: 700; }
+.brand-caption { font-size: 14px; line-height: 1.15; margin-top: 4px; letter-spacing: .035em; color: #fff8e6; font-weight: 500; }
+header .logo-header-right { display: flex; padding: 0; width: 128px; max-width: 128px; min-width: 0; flex: 0 0 128px; }
+header .logo-header-right img { width: 100%; height: auto; object-fit: contain; }
+.header-actions { margin-left: auto; }
+.language-control { display: inline-flex; align-items: center; }
+.language-control select { appearance: auto; min-height: 42px; width: 104px; padding: .45rem .55rem; border: 1px solid #ffffff55; border-radius: 5px; background: #393f5f; color: #fff8e6; font: inherit; font-size: 13px; cursor: pointer; color-scheme: dark; }
+.language-control select:focus-visible { outline: 2px solid #ffe69d; outline-offset: 4px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.hero-piece, .decoration-piece { transform-box: fill-box; transform-origin: center; }
+.scroll-strand { opacity: .62; }
+.scroll-strand svg { overflow: visible; }
+.strand-tip { stroke: #fff; stroke-width: 2; }
+@media (max-width: 999px) {
+ .nav-container header { gap: 1rem; }
+ .scroll-strand { opacity: .46; }
+}
+@media (max-width: 599px) {
+ .nav-container header { width: calc(100% - 24px); gap: .65rem; }
+ header a.brand { min-width: 94px; }
+ .brand-name { font-size: 23px; }
+ .brand-caption { font-size: 11px; margin-top: 3px; letter-spacing: .01em; }
+ header .logo-header-right { width: 64px; max-width: 64px; flex-basis: 64px; }
+ .language-control select { width: 82px; min-height: 40px; font-size: 11px; padding: .4rem .25rem; }
+}

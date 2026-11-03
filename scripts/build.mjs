@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile, cp, rm, readdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { japanesePage } from './localize.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -19,6 +20,13 @@ if (sitekey) {
   // Missing deployment configuration must never remove the contact form.
   console.warn('TURNSTILE_SITE_KEY is not set. The contact form remains visible; configure the public site key and runtime secrets before accepting submissions.');
 }
+// Version CSS and scripts so a new deployment cannot reuse the previous animation code.
+for (const asset of new Set(Array.from(html.matchAll(/(?:src|href)="\/((?:css|js)\/[^"]+)"/g), match => match[1]))) {
+  const source = asset === 'js/gsap.min.js' || asset === 'js/ScrollTrigger.min.js'
+    ? path.join(root, 'node_modules/gsap/dist', path.basename(asset)) : path.join(root, asset);
+  const hash = createHash('sha256').update(await readFile(source)).digest('hex').slice(0, 12);
+  html = html.replaceAll(`"/${asset}"`, `"/${asset}?v=${hash}"`);
+}
 await writeFile(path.join(dist, 'index.html'), html);
 await mkdir(path.join(dist, 'ja'), { recursive: true });
 await writeFile(path.join(dist, 'ja/index.html'), japanesePage(html));
@@ -26,9 +34,12 @@ await writeFile(path.join(dist, 'ja/index.html'), japanesePage(html));
 for (const name of ['robots.txt', 'llm.txt', 'llms.txt', 'sitemap.xml', '_headers', '_redirects', '_routes.json']) {
   await cp(path.join(root, name), path.join(dist, name));
 }
-for (const name of ['css/main.css', 'css/enhancements.css', 'js/index.js']) {
+for (const name of ['css/main.css', 'css/enhancements.css', 'js/index.js', 'js/motion.js']) {
   await mkdir(path.dirname(path.join(dist, name)), { recursive: true });
   await cp(path.join(root, name), path.join(dist, name));
+}
+for (const name of ['gsap.min.js', 'ScrollTrigger.min.js']) {
+  await cp(path.join(root, 'node_modules/gsap/dist', name), path.join(dist, 'js', name));
 }
 await mkdir(path.join(dist, 'img'));
 const originals = new Set(['team_img.png', 'contact_img.png', 'blockchain_img.png', 'services_img.png', 'form_img.png', 'malte_img.png', 'surya.png']);

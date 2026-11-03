@@ -11,8 +11,12 @@ test('public build excludes private/source files and configures only public widg
   assert.match(ja, /アイデアを、デジタルのかたちに。/);
   assert.match(ja, /action="\/api\/contact\?lang=ja"/);
   assert.match(ja, /rel="canonical" href="https:\/\/omnilabs.digital\/ja\/"/);
-  assert.match(ja, /data-language="ja" aria-label="日本語" aria-current="page"/);
-  assert.ok(!ja.includes('data-language="en" aria-label="English" aria-current="page"'));
+  assert.match(ja, /<option value="ja" selected>日本語<\/option>/);
+  assert.ok(!ja.includes('<option value="en" selected>'));
+  assert.ok(html.includes('<option value="en" selected>English</option>'));
+  for (const name of ['gsap.min.js', 'ScrollTrigger.min.js', 'motion.js']) assert.ok(existsSync(`dist/js/${name}`));
+  assert.match(html, /class="logo-header-right"/);
+  assert.match(html, /src="\/img\/omni_logo.png"/);
   assert.ok(!ja.includes('src="img/') && !ja.includes('href="css/'), 'Nested locale must use root-relative assets');
   for (const language of ['en', 'ja', 'x-default']) {
     assert.ok(html.includes(`hreflang="${language}"`));

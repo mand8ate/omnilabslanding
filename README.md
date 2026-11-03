@@ -7,6 +7,7 @@ Static HTML/CSS/JavaScript with a JavaScript Cloudflare Worker at `/api/contact`
 Use Node.js 20 or newer:
 
 ```sh
+npm ci
 npm test
 npm run build
 ```
@@ -67,9 +68,9 @@ Do not use `wrangler deploy` with the Pages config. Do not upload only `dist/` w
 
 The original stylesheet is `css/main.css`; current overrides are `css/enhancements.css`. SCSS and maps are legacy artifacts, not an active build pipeline. Original large PNGs are retained locally but excluded from deployment in favor of compressed JPGs.
 
-`img/scroll-strand.svg` is embedded by the build and adapted to the current section positions in document pixels. The reveal follows a point at 95% of the viewport height rather than a percentage of total path length, so it stays in step on wide screens. Path geometry is cached and rebuilt only when layout changes.
+`img/scroll-strand.svg` is embedded by the build and adapted to measured section positions. Its visible leading point is solved from the SVG path’s actual Y coordinate and stays at 72% of viewport height while scrolling, with no scrub or easing delay. The canvas’s actual bounding box supplies the coordinate origin; viewport width and path arc length cannot change tracking speed.
 
-The hero uses the native Web Animations API for staggered assembly and gentle block motion, with a pause/resume control. Animations pause when the hero leaves the viewport or the page is hidden. Reduced-motion preferences show a static hero and the full strand. The smaller section and footer decorations assemble with a short stagger when scrolling into view, and replay on re-entry. Their original mirrored/rotated SVG transforms are preserved in group wrappers. No external animation library is required.
+Greensock (GSAP and ScrollTrigger) is pinned in `package-lock.json` and copied into the public build from npm, with no CDN requests. `js/motion.js` handles the hero assembly/ambient motion, pause control and scroll-scrubbed section/footer blocks. `js/index.js` independently handles language selection and contact feedback. Reduced-motion preferences show static graphics. CSS/script URLs carry content hashes to prevent stale animation code after deployment.
 
 `robots.txt`, `sitemap.xml`, `llms.txt` and `llm.txt` assume the canonical URL https://omnilabs.digital/. These improve machine readability without guaranteeing search or AI placement. Review historical portfolio status text before describing it as current work.
 
@@ -77,6 +78,6 @@ References: [Pages Functions](https://developers.cloudflare.com/pages/functions/
 
 ## English and Japanese
 
-The build emits English at `/` and Japanese at `/ja/`. The EN/JP header links work without JavaScript; with JavaScript, they retain the current section anchor. No automatic language redirect is imposed. Both pages include reciprocal hreflang links, their own canonical URL and localized metadata.
+The build emits English at `/` and Japanese at `/ja/`. The native language dropdown retains the current section anchor when navigating. A noscript fallback provides ordinary language links. No automatic language redirect is imposed. Both pages include reciprocal hreflang links, their own canonical URL and localized metadata.
 
 English content and shared layout live in `index.html`. Japanese copy is in `locales/ja.json`, applied at build time by `scripts/localize.mjs`, so visitors and search crawlers receive complete HTML. New visible English strings must have Japanese translations or be explicitly retained as brand names. Contact feedback, motion controls, input labels and spam verification are localized. Japanese form submissions return to `/ja/#contact`.
