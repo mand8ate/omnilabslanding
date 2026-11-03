@@ -1,0 +1,11 @@
+{
+  "name": "omnilabs-digital",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test",
+    "dev": "npx wrangler pages dev dist"
+  },
+  "engines": { "node": ">=20" }
+}

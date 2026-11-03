@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap");
+400;700&display=swap");
 
 html {
   scroll-behavior: smooth;
@@ -427,12 +427,7 @@ section {
     border: 5px solid #6a7e6a;
 
     &.malte {
-      background: url("../img/malte_img.png");
-      background-size: contain;
-    }
-
-    &.surya {
-      background: url("../img/surya.png");
+      background: url("../img/malte_img.jpg");
       background-size: contain;
     }
   }
@@ -499,7 +494,7 @@ section.contact {
   flex-direction: column;
   align-items: center;
   background: linear-gradient(rgba(57, 63, 95, 0.8), rgba(57, 63, 95, 0.8)),
-    url("../img/form_img.png") center;
+    url("../img/form_img.jpg") center;
   background-size: cover;
   border-radius: 10px;
   padding: 1em 2em;
@@ -1063,10 +1058,6 @@ footer {
       }
 
       .circle-team {
-        &.surya {
-          width: 250px;
-          height: 250px;
-        }
       }
     }
 

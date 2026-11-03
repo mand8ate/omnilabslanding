@@ -1,106 +1,37 @@
-// style changes
-const elements = Array.from(document.querySelectorAll(".card-link"));
-const elementsToChange = Array.from(document.querySelectorAll(".li-change"));
-
-console.log(elements, elementsToChange);
-
-elements.forEach((element, i) => {
-  element.addEventListener("mouseover", () => {
-    elementsToChange[i].style.background = "#EA7F72";
-  });
-
-  element.addEventListener("mouseout", () => {
-    elementsToChange[i].style.background = "#e96d5e";
-  });
-});
-
-// animations
-gsap.registerPlugin(ScrollTrigger);
-const tl = gsap.timeline();
-
-tl.from(".content", {
-  y: "-30%",
-  opacity: 0,
-  duration: 2,
-  ease: Power4.easeOut,
-});
-tl.from(
-  ".stagger1",
-  {
-    opacity: 0,
-    y: -50,
-    stagger: 0.3,
-    duration: 2,
-    ease: Power4.easeOut,
-  },
-  "-=1.5"
-);
-tl.from(
-  ".hero-graphic",
-  {
-    opacity: 0,
-    y: 50,
-    ease: Power4.easeOut,
-    duration: 1,
-  },
-  "-=2.5"
-);
-
-gsap.from(".hero-anim", {
-  stagger: 0.1,
-  scale: 0.1,
-  opacity: 0,
-  duration: 0.5,
-  ease: Back.easeOut.config(1.7),
-});
-
-const animate1 = (element) => {
-  gsap.from(element, {
-    scrollTrigger: {
-      trigger: element,
-      start: "top bottom",
-    },
-    y: 50,
-    opacity: 0,
-    duration: 1.2,
-    stagger: 0.3,
-  });
-};
-
-animate1(".transition1");
-animate1(".transition1-content");
-animate1(".transition2");
-animate1(".transition3");
-animate1(".transition3-mobile");
-animate1(".transition4");
-animate1(".transition5");
-animate1(".transition6");
-animate1(".transition7");
-animate1(".transition7-mobile");
-animate1(".transition8");
-animate1(".transition9");
-
-// navbar
-const body = document.body;
-let lastScroll = 0;
-
-window.addEventListener("scroll", () => {
-  const currentScroll = window.pageYOffset;
-  if (currentScroll <= 0) {
-    body.classList.remove("scrollUp");
-    return;
-  }
-
-  if (currentScroll > lastScroll && !body.classList.contains("scrollDown")) {
-    body.classList.remove("scrollUp");
-    body.classList.add("scrollDown");
-  } else if (
-    currentScroll < lastScroll &&
-    body.classList.contains("scrollDown")
-  ) {
-    body.classList.remove("scrollDown");
-    body.classList.add("scrollUp");
-  }
-
-  lastScroll = currentScroll;
-});
+'use strict';
+(() => {
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const strand = document.getElementById('scroll-strand-path');
+  let scheduled = false;
+  let previousScroll = window.scrollY;
+  const update = () => {
+    const y = Math.max(0, window.scrollY);
+    document.body.classList.toggle('scrollDown', y > previousScroll && y > 150);
+    document.body.classList.toggle('scrollUp', y < previousScroll && y > 0);
+    previousScroll = y;
+    if (strand) {
+      const height = document.documentElement.scrollHeight;
+      const progress = Math.min(1, Math.max(0, (y + window.innerHeight * .85) / height));
+      strand.style.strokeDasharray = '1';
+      strand.style.strokeDashoffset = reducedMotion.matches ? '0' : String(1 - progress);
+    }
+    scheduled = false;
+  };
+  const schedule = () => {
+    if (!scheduled) { scheduled = true; requestAnimationFrame(update); }
+  };
+  schedule();
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule, { passive: true });
+  reducedMotion.addEventListener('change', schedule);
+  if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(document.body);
+  const status = document.getElementById('form-status');
+  const result = new URLSearchParams(window.location.search).get('contact');
+  const messages = {
+    sent: 'Thank you. Your message has been accepted for delivery.',
+    invalid: 'Please enter a valid name, email address and message (up to 5,000 characters).',
+    unavailable: 'Your message could not be sent. Please email malte@omnilabs.digital.',
+    verification: 'Please complete the spam verification and submit your message again.'
+  };
+  if (status && messages[result]) status.textContent = messages[result];
+})();
