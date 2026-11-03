@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile, cp, rm, readdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { japanesePage } from './localize.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const dist = path.join(root, 'dist');
@@ -9,15 +10,18 @@ if (sitekey && !/^[A-Za-z0-9_-]{10,100}$/.test(sitekey)) throw new Error('Invali
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 let html = await readFile(path.join(root, 'index.html'), 'utf8');
+const strand = await readFile(path.join(root, 'img/scroll-strand.svg'), 'utf8');
+html = html.replace('<!-- scroll-strand -->', strand.replace('id="strand"', 'id="scroll-strand-path"').replace('<svg ', '<svg focusable="false" '));
 if (sitekey) {
   html = html.replace('<!-- contact-verification -->', `<div class="cf-turnstile" data-sitekey="${sitekey}" data-action="contact" data-size="flexible"></div>`)
     .replace('<!-- contact-script -->', '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>');
 } else {
-  // A static preview remains useful without credentials. Do not show a broken form.
-  html = html.replace(/<form\b[\s\S]*?<\/form>/, '<p class="contact-note">Please email Malte to discuss your project.</p>');
-  console.warn('TURNSTILE_SITE_KEY is not set: the build shows email contact instead of the form.');
+  // Missing deployment configuration must never remove the contact form.
+  console.warn('TURNSTILE_SITE_KEY is not set. The contact form remains visible; configure the public site key and runtime secrets before accepting submissions.');
 }
 await writeFile(path.join(dist, 'index.html'), html);
+await mkdir(path.join(dist, 'ja'), { recursive: true });
+await writeFile(path.join(dist, 'ja/index.html'), japanesePage(html));
 // Explicit public-file allowlist prevents deployment of secrets, source and vendor code.
 for (const name of ['robots.txt', 'llm.txt', 'llms.txt', 'sitemap.xml', '_headers', '_redirects', '_routes.json']) {
   await cp(path.join(root, name), path.join(dist, name));

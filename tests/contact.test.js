@@ -80,3 +80,15 @@ test('provider rejection and network failures produce safe unavailable responses
   const thrown = await handleContact(context(), async () => { throw new Error('private diagnostic'); });
   assert.equal(outcome(thrown), 'unavailable');
 });
+
+test('Japanese contact redirects stay localized and arbitrary redirect targets are ignored', async () => {
+  for (const [lang, expectedPath] of [['ja', '/ja/'], ['https://attacker.example/', '/']]) {
+    const ctx = context({}, { ...fields, name: '山田 太郎', message: 'Webサイト制作について相談したいです。', website: 'bot' });
+    ctx.request = new Request(`https://omnilabs.digital/api/contact?lang=${encodeURIComponent(lang)}`, ctx.request);
+    const response = await handleContact(ctx, unexpectedFetch);
+    const location = new URL(response.headers.get('Location'));
+    assert.equal(location.origin, 'https://omnilabs.digital');
+    assert.equal(location.pathname, expectedPath);
+    assert.equal(location.hash, '#contact');
+  }
+});

@@ -7,9 +7,10 @@ const safeHeaders = {
 };
 
 function redirect(request, result) {
+  const home = new URL(request.url).searchParams.get('lang') === 'ja' ? '/ja/' : '/';
   return new Response(null, {
     status: 303,
-    headers: { ...safeHeaders, Location: new URL(`/?contact=${result}#contact`, request.url).href },
+    headers: { ...safeHeaders, Location: new URL(`${home}?contact=${result}#contact`, request.url).href },
   });
 }
 

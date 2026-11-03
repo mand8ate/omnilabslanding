@@ -11,7 +11,7 @@ npm test
 npm run build
 ```
 
-`dist/` contains only public assets. Without `TURNSTILE_SITE_KEY`, the build shows the direct email contact instead of an unusable form. To preview the full form, set your public sitekey before building:
+`dist/` contains only public assets. The contact form is always included and posts to `/api/contact` (or `/api/contact?lang=ja`). Set `TURNSTILE_SITE_KEY` before building to enable its spam-verification widget:
 
 ```sh
 TURNSTILE_SITE_KEY=your_public_sitekey npm run build
@@ -36,7 +36,7 @@ In the Worker’s Git build settings use:
 
 The existing Cloudflare Worker name must match `name` in `wrangler.toml` (`omnilabs-digital`), or change the config to the name you selected in Cloudflare.
 
-1. Create a Turnstile widget for the production hostname. Add its public `TURNSTILE_SITE_KEY` to the Worker’s **build variables**. Without it, the build deliberately shows email contact instead of the form.
+1. Create a Turnstile widget for the production hostname. Add its public `TURNSTILE_SITE_KEY` to the Worker’s **build variables**. The form stays visible even if this variable is missing; submissions cannot pass verification until the widget and matching runtime secret are configured.
 2. Add `TURNSTILE_SECRET_KEY` and `SENDGRID_API_KEY` as **runtime secrets** in the Worker settings. Configure preview environments separately if needed. Never add private keys to the public HTML or repository. Verify `malte@omnilabs.digital` as a SendGrid sender.
 3. Deploy and test the generated workers.dev address before attaching the domain. Allow that hostname in the Turnstile widget if testing the form there. The function requires verified hostname and action `contact` to match.
 4. Add `omnilabs.digital` as a custom domain only after staging checks pass. Preserve MX, SPF, DKIM and DMARC records. Retain the old site until cutover is verified. The agent does not access Cloudflare automatically; login, deployment, secrets and DNS setup remain user-managed.
@@ -67,8 +67,16 @@ Do not use `wrangler deploy` with the Pages config. Do not upload only `dist/` w
 
 The original stylesheet is `css/main.css`; current overrides are `css/enhancements.css`. SCSS and maps are legacy artifacts, not an active build pipeline. Original large PNGs are retained locally but excluded from deployment in favor of compressed JPGs.
 
-`img/scroll-strand.svg` is drawn using requestAnimationFrame as the visitor scrolls. Reduced-motion preferences show a static path.
+`img/scroll-strand.svg` is embedded by the build and adapted to the current section positions in document pixels. The reveal follows a point at 95% of the viewport height rather than a percentage of total path length, so it stays in step on wide screens. Path geometry is cached and rebuilt only when layout changes.
+
+The hero uses the native Web Animations API for staggered assembly and gentle block motion, with a pause/resume control. Animations pause when the hero leaves the viewport or the page is hidden. Reduced-motion preferences show a static hero and the full strand. The smaller section and footer decorations assemble with a short stagger when scrolling into view, and replay on re-entry. Their original mirrored/rotated SVG transforms are preserved in group wrappers. No external animation library is required.
 
 `robots.txt`, `sitemap.xml`, `llms.txt` and `llm.txt` assume the canonical URL https://omnilabs.digital/. These improve machine readability without guaranteeing search or AI placement. Review historical portfolio status text before describing it as current work.
 
 References: [Pages Functions](https://developers.cloudflare.com/pages/functions/), [Turnstile server validation](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/), [SendGrid Mail Send](https://www.twilio.com/docs/sendgrid/api-reference/mail-send/mail-send).
+
+## English and Japanese
+
+The build emits English at `/` and Japanese at `/ja/`. The EN/JP header links work without JavaScript; with JavaScript, they retain the current section anchor. No automatic language redirect is imposed. Both pages include reciprocal hreflang links, their own canonical URL and localized metadata.
+
+English content and shared layout live in `index.html`. Japanese copy is in `locales/ja.json`, applied at build time by `scripts/localize.mjs`, so visitors and search crawlers receive complete HTML. New visible English strings must have Japanese translations or be explicitly retained as brand names. Contact feedback, motion controls, input labels and spam verification are localized. Japanese form submissions return to `/ja/#contact`.

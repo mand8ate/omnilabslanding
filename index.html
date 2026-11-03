@@ -7,10 +7,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description"
     content="Omni Labs Digital connects product strategy, web development and digital marketing. Work with Malte Detjens to bring your next digital product to life.">
-  <link rel="stylesheet" href="css/main.css" />
-  <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
   <title>Omni Labs Digital | Web Development & Digital Marketing</title>
   <link rel="canonical" href="https://omnilabs.digital/">
+  <link rel="alternate" hreflang="en" href="https://omnilabs.digital/">
+  <link rel="alternate" hreflang="ja" href="https://omnilabs.digital/ja/">
+  <link rel="alternate" hreflang="x-default" href="https://omnilabs.digital/">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="ja_JP">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="#393f5f">
   <meta property="og:type" content="website">
@@ -21,22 +26,27 @@
   <meta property="og:image:alt" content="Omni Labs Digital logo">
   <meta name="twitter:card" content="summary">
   <link rel="alternate" type="text/plain" href="/llms.txt" title="Information for language models">
-  <link rel="stylesheet" href="css/enhancements.css">
+  <link rel="stylesheet" href="/css/enhancements.css">
   <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://omnilabs.digital/#organization", "name": "Omni Labs Digital", "url": "https://omnilabs.digital/", "logo": "https://omnilabs.digital/img/omni_logo_large.png", "email": "malte@omnilabs.digital", "areaServed": ["Japan", "Asia-Pacific"], "member": {"@id": "https://omnilabs.digital/#malte"}}, {"@type": "Person", "@id": "https://omnilabs.digital/#malte", "name": "Malte Detjens", "url": "https://omnilabs.digital/#team", "knowsAbout": ["Product development", "Web development", "Digital marketing"]}]}</script>
 </head>
 
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
-  <div class="scroll-strand" aria-hidden="true"><svg viewBox="0 0 1200 6000" preserveAspectRatio="none" focusable="false"><use fill="none" id="scroll-strand-path" href="img/scroll-strand.svg#strand" /></svg></div>
+  <div class="scroll-strand" aria-hidden="true"><!-- scroll-strand --></div>
   <!-- header start -->
   <div class="nav-container">
     <header>
-      <a href="/" class="logo-header-left">
-        <p class="line-one">Omni</p>
-        <p class="line-two">Labs Digital</p>
+      <a href="/" class="brand" aria-label="Omni Labs Digital home">
+        <svg class="brand-mark" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <rect x="2" y="2" width="15" height="15" rx="4" fill="#FFE69D"/>
+          <rect x="23" y="2" width="15" height="15" rx="7.5" fill="#E96D5E"/>
+          <rect x="2" y="23" width="15" height="15" rx="7.5" fill="#AFC8AF"/>
+          <rect x="23" y="23" width="15" height="15" rx="4" fill="#FFE69D"/>
+        </svg>
+        <span class="brand-text"><span class="brand-name">omni<span class="brand-dot">.</span></span><span class="brand-caption">LABS DIGITAL</span></span>
       </a>
 
-      <nav>
+      <nav aria-label="Main navigation">
         <ul>
           <li><a href="#services">Services</a></li>
           <li><a href="#projects">Projects</a></li>
@@ -45,37 +55,43 @@
         </ul>
       </nav>
 
-      <a href="/" class="logo-header-right"><img src="img/omni_logo.png" alt="omni labs digital" width="256" height="128" decoding="async" /></a>
+      <div class="header-actions">
+        <nav class="language-switch" aria-label="Language">
+          <a href="/" lang="en" hreflang="en" data-language="en" aria-label="English" aria-current="page">EN</a>
+          <a href="/ja/" lang="ja" hreflang="ja" data-language="ja" aria-label="Japanese">JP</a>
+        </nav>
+        <a href="#contact" class="header-contact">Let’s talk <span aria-hidden="true">↗</span></a>
+      </div>
     </header>
   </div>
   <!-- mobile nav start -->
-  <nav class="mobile">
+  <nav class="mobile" aria-label="Mobile navigation">
     <ul>
       <li>
         <a href="#services">
           <div>
-            <img src="img/mobile_skill_icon.png" alt="services mobile" width="300" height="263" decoding="async" /><span>Services</span>
+            <img src="/img/mobile_skill_icon.png" alt="services mobile" width="300" height="263" decoding="async" /><span>Services</span>
           </div>
         </a>
       </li>
       <li>
         <a href="#projects">
           <div>
-            <img src="img/mobile_projects_icon.png" alt="projects mobile" width="300" height="300" decoding="async" /><span>Projects</span>
+            <img src="/img/mobile_projects_icon.png" alt="projects mobile" width="300" height="300" decoding="async" /><span>Projects</span>
           </div>
         </a>
       </li>
       <li>
         <a href="#team">
           <div>
-            <img src="img/mobile_team_icon.png" alt="team mobile" width="300" height="300" decoding="async" /><span>Team</span>
+            <img src="/img/mobile_team_icon.png" alt="team mobile" width="300" height="300" decoding="async" /><span>Team</span>
           </div>
         </a>
       </li>
       <li>
         <a href="#contact">
           <div>
-            <img src="img/mobile_contact_icon.png" alt="contact mobile" width="300" height="300" decoding="async" /><span>Contact</span>
+            <img src="/img/mobile_contact_icon.png" alt="contact mobile" width="300" height="300" decoding="async" /><span>Contact</span>
           </div>
         </a>
       </li>
@@ -89,13 +105,14 @@
     <div class="content">
       <h1 class="stagger1">From your idea to a digital product</h1>
       <div class="enter stagger1">
-        <span><img src="img/down_icon.png" alt="down icon" class="down-arrow-anim" width="40" height="40" decoding="async" /></span>
+        <span><img src="/img/down_icon.png" alt="down icon" class="down-arrow-anim" width="40" height="40" decoding="async" /></span>
         <p>Enter Omni Labs</p>
       </div>
       <a href="#services" class="button stagger1">What we offer</a>
     </div>
     <!-- hero graphic start -->
-    <svg width="660" height="528" viewBox="0 0 750 580" fill="none" class="hero-graphic">
+    <div class="hero-art">
+    <svg width="750" height="580" viewBox="-20 -25 800 640" fill="none" class="hero-graphic" aria-hidden="true" focusable="false">
       <rect class="hero-anim" x="170" y="155" width="115" height="115" rx="20" fill="white" />
       <rect class="hero-anim" x="170" width="115" height="115" rx="20" fill="#FF9760" />
       <g filter="url(#filter0_f_8_88)">
@@ -153,13 +170,15 @@
         </filter>
       </defs>
     </svg>
+    <button class="motion-toggle" type="button" aria-pressed="false" hidden>Pause motion <span aria-hidden="true">Ⅱ</span></button>
+    </div>
     <!-- hero graphic end -->
   </div>
 
   <!-- hero end -->
   <!-- services start -->
   <section class="services-intro" id="services">
-    <img src="img/services_img.jpg" alt="services" class="left transition1" width="1200" height="675" decoding="async" loading="lazy" />
+    <img src="/img/services_img.jpg" alt="services" class="left transition1" width="1200" height="675" decoding="async" loading="lazy" />
     <div class="right">
       <svg width="284" height="446" viewBox="0 0 284 446" fill="none" preserveAspectRatio="none" class="graphic-right">
         <rect opacity="1" x="163" y="162" width="120.682" height="120.682" rx="20" fill="#FFE69D" fill-opacity="1" />
@@ -188,7 +207,7 @@
       <ul>
         <li class="transition1-content">
           <div class="icon-container one">
-            <img src="img/product_dev.svg" alt="product development" />
+            <img src="/img/product_dev.svg" alt="product development" />
           </div>
           <p class="card-title">Product Development</p>
           <p class="card-desc">
@@ -199,7 +218,7 @@
         </li>
         <li class="transition1-content">
           <div class="icon-container two">
-            <img src="img/fullstack_dev.svg" alt="full stack development" />
+            <img src="/img/fullstack_dev.svg" alt="full stack development" />
           </div>
           <p class="card-title">Full Stack Development</p>
           <p class="card-desc">
@@ -209,7 +228,7 @@
         </li>
         <li class="transition1-content">
           <div class="icon-container three">
-            <img src="img/marketing_icon.svg" alt="product development" />
+            <img src="/img/marketing_icon.svg" alt="product development" />
           </div>
           <p class="card-title">Online Marketing</p>
           <p class="card-desc">
@@ -245,7 +264,7 @@
         <line opacity="1" x1="60" y1="325" x2="60" y2="282" stroke="#E1B5B8" stroke-opacity="1" stroke-width="4" />
       </svg>
     </div>
-    <img src="img/blockchain_img.jpg" alt="services" class="right transition2" width="1200" height="685" decoding="async" loading="lazy" />
+    <img src="/img/blockchain_img.jpg" alt="services" class="right transition2" width="1200" height="685" decoding="async" loading="lazy" />
   </section>
   <!-- blockchain end -->
   <!-- projects start -->
@@ -275,7 +294,7 @@
       </div>
     </div>
     <!-- desktop -->
-    <img src="img/projects_img.webp" alt="projects" class="left transition3" width="1792" height="1024" decoding="async" />
+    <img src="/img/projects_img.webp" alt="projects" class="left transition3" width="1792" height="1024" decoding="async" />
     <div class="right desk">
       <svg width="284" height="446" viewBox="0 0 284 446" fill="none" preserveAspectRatio="none" class="graphic-right">
         <rect opacity="1" x="163" y="162" width="120.682" height="120.682" rx="20" fill="#DBE4DB" fill-opacity="1" />
@@ -374,7 +393,7 @@
         <line opacity="1" x1="60" y1="325" x2="60" y2="282" stroke="#AEB1BD" stroke-opacity="1" stroke-width="4" />
       </svg>
     </div>
-    <img src="img/team_img.jpg" alt="team" class="right transition5" width="1200" height="675" decoding="async" loading="lazy" />
+    <img src="/img/team_img.jpg" alt="team" class="right transition5" width="1200" height="675" decoding="async" loading="lazy" />
   </section>
   <section class="team-content">
     <div class="member-left">
@@ -417,7 +436,7 @@
   <!-- contact start -->
   <section class="contact" id="contact">
     <div class="contact-intro">
-      <img src="img/contact_img.jpg" alt="contact" class="left transition8" width="1200" height="675" decoding="async" loading="lazy" />
+      <img src="/img/contact_img.jpg" alt="contact" class="left transition8" width="1200" height="675" decoding="async" loading="lazy" />
       <div class="right">
         <svg width="284" height="446" viewBox="0 0 284 446" fill="none" preserveAspectRatio="none"
           class="graphic-right">
@@ -484,7 +503,7 @@
       </nav>
     </div>
     <a href="/" class="logo-footer" aria-label="Omni Labs Digital home">
-      <img src="img/omni_logo_large.png" alt="omni labs digital" width="480" height="240" decoding="async" /></a>
+      <img src="/img/omni_logo_large.png" alt="omni labs digital" width="480" height="240" decoding="async" /></a>
 
     <svg width="270" height="595" viewBox="0 0 270 595" fill="none" class="footer-graphic-right">
       <g filter="url(#filter0_f_92_2)">
@@ -554,7 +573,7 @@
     </div>
   </footer>
   <!-- contact-script -->
-  <script src="js/index.js" defer></script>
+  <script src="/js/index.js" defer></script>
 </body>
 
 </html>

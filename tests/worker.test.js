@@ -22,3 +22,14 @@ test('retired PHP URLs redirect to contact without executing PHP', async () => {
     assert.equal(response.headers.get('Location'), 'https://example.com/#contact');
   }
 });
+
+
+test('actual form POST reaches serverless handler and redirects safely when credentials are absent', async () => {
+  const response = await worker.fetch(new Request('https://omnilabs.digital/api/contact?lang=ja', {
+    method: 'POST',
+    headers: { Origin: 'https://omnilabs.digital', 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ name: '山田 太郎', email: 'visitor@example.com', message: '制作についてのご相談です。' }),
+  }), {});
+  assert.equal(response.status, 303);
+  assert.equal(response.headers.get('Location'), 'https://omnilabs.digital/ja/?contact=unavailable#contact');
+});
