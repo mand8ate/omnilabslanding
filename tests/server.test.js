@@ -32,14 +32,13 @@ test('Hostinger serves built pages and JavaScript, with security headers and con
   } finally { await rm(assetRoot, { recursive: true, force: true }); }
 });
 
-test('Hostinger contact adapter uses the existing verification and mail handler', async () => {
+test('Hostinger contact adapter uses the mail handler without a challenge service', async () => {
   let count = 0;
   const response = await handleSiteRequest(new Request('https://omnilabs.digital/api/contact?lang=ja', {
     method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Origin: 'https://omnilabs.digital' },
-    body: new URLSearchParams({ name: '山田 太郎', email: 'visitor@example.com', message: 'プロジェクトのご相談です。', 'cf-turnstile-response': 'test-token' }),
-  }), { env: { SENDGRID_API_KEY: 'test', TURNSTILE_SECRET_KEY: 'test' }, fetcher: async () => ++count === 1
-    ? Response.json({ success: true, hostname: 'omnilabs.digital', action: 'contact' }) : new Response(null, { status: 202 }) });
-  assert.equal(count, 2);
+    body: new URLSearchParams({ name: '山田 太郎', email: 'visitor@example.com', message: 'プロジェクトのご相談です。', form_started: String(Date.now() - 10000) }),
+  }), { env: { SENDGRID_API_KEY: 'test' }, fetcher: async () => { count++; return new Response(null, { status: 202 }); } });
+  assert.equal(count, 1);
   assert.equal(response.status, 303);
   assert.equal(response.headers.get('Location'), 'https://omnilabs.digital/ja/?contact=sent#contact');
 });

@@ -6,20 +6,11 @@ import { japanesePage } from './localize.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const dist = path.join(root, 'dist');
-const sitekey = process.env.TURNSTILE_SITE_KEY || '';
-if (sitekey && !/^[A-Za-z0-9_-]{10,100}$/.test(sitekey)) throw new Error('Invalid TURNSTILE_SITE_KEY');
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 let html = await readFile(path.join(root, 'index.html'), 'utf8');
 const strand = await readFile(path.join(root, 'img/scroll-strand.svg'), 'utf8');
 html = html.replace('<!-- scroll-strand -->', strand.replace('id="strand"', 'id="scroll-strand-path"').replace('<svg ', '<svg focusable="false" '));
-if (sitekey) {
-  html = html.replace('<!-- contact-verification -->', `<div class="cf-turnstile" data-sitekey="${sitekey}" data-action="contact" data-size="flexible"></div>`)
-    .replace('<!-- contact-script -->', '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>');
-} else {
-  // Missing deployment configuration must never remove the contact form.
-  console.warn('TURNSTILE_SITE_KEY is not set. The contact form remains visible; configure the public site key and runtime secrets before accepting submissions.');
-}
 // Version CSS and scripts so a new deployment cannot reuse the previous animation code.
 for (const asset of new Set(Array.from(html.matchAll(/(?:src|href)="\/((?:css|js)\/[^"]+)"/g), match => match[1]))) {
   const source = asset === 'js/gsap.min.js' || asset === 'js/ScrollTrigger.min.js'

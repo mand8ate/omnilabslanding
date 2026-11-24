@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { readFileSync, existsSync } from 'node:fs';
 
-test('public build excludes private/source files and configures only public widget key', () => {
-  execFileSync(process.execPath, ['scripts/build.mjs'], { env: { ...process.env, TURNSTILE_SITE_KEY: 'test-public-site-key' } });
+test('public build excludes private/source files and needs no challenge service', () => {
+  execFileSync(process.execPath, ['scripts/build.mjs'], { env: { ...process.env } });
   const html = readFileSync('dist/index.html', 'utf8');
   const ja = readFileSync('dist/ja/index.html', 'utf8');
   assert.match(ja, /<html lang="ja">/);
@@ -23,8 +23,9 @@ test('public build excludes private/source files and configures only public widg
     assert.ok(ja.includes(`hreflang="${language}"`));
   }
   assert.match(html, /action="\/api\/contact"/);
-  assert.match(html, /data-sitekey="test-public-site-key"/);
-  assert.match(html, /data-action="contact"/);
+  assert.ok(!html.includes('challenges.cloudflare.com'));
+  assert.ok(!html.includes('cf-turnstile'));
+  assert.match(html, /name="form_started"/);
   assert.equal((html.match(/id="scroll-strand-path"/g) || []).length, 1);
   assert.ok(!html.includes('<!-- scroll-strand -->'), 'SVG must be embedded in the public build');
   for (const file of ['vendor', 'functions', '.env', '.dev.vars', 'package.json', 'sendgrid-form.php', 'img/surya.png']) assert.equal(existsSync(`dist/${file}`), false, file);
@@ -32,8 +33,8 @@ test('public build excludes private/source files and configures only public widg
 });
 
 
-test('both language builds retain the serverless contact form when the public key is not configured', () => {
-  execFileSync(process.execPath, ['scripts/build.mjs'], { env: { ...process.env, TURNSTILE_SITE_KEY: '' }, stdio: 'pipe' });
+test('both language builds retain the contact form without provider configuration', () => {
+  execFileSync(process.execPath, ['scripts/build.mjs'], { env: { ...process.env }, stdio: 'pipe' });
   for (const [file, action] of [['dist/index.html', '/api/contact'], ['dist/ja/index.html', '/api/contact?lang=ja']]) {
     const page = readFileSync(file, 'utf8');
     assert.ok(page.includes(`action="${action}"`));

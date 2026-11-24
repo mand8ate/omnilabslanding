@@ -6,6 +6,25 @@ const safeHeaders = {
   'Referrer-Policy': 'no-referrer',
 };
 
+// Best-effort, per-process limits. No email addresses are retained in limiter keys.
+// Multiple instances have independent limits; restarts clear this bounded memory.
+export function createContactGuard(now = Date.now) {
+  const buckets = new Map();
+  return async (email) => {
+    const time = now();
+    for (const [key, value] of buckets) if (value.until <= time) buckets.delete(key);
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(email.toLowerCase()));
+    const key = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+    const total = buckets.get('total') || { count: 0, until: time + 900000 };
+    const sender = buckets.get(key) || { count: 0, until: time + 900000 };
+    if (total.count >= 30 || sender.count >= 3 || (!buckets.has(key) && buckets.size >= 1000)) return false;
+    total.count++; sender.count++;
+    buckets.set('total', total); buckets.set(key, sender);
+    return true;
+  };
+}
+const allowContact = createContactGuard();
+
 function redirect(request, result) {
   const home = new URL(request.url).searchParams.get('lang') === 'ja' ? '/ja/' : '/';
   return new Response(null, {
@@ -41,7 +60,7 @@ async function readBody(request) {
   return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
 }
 
-export async function handleContact({ request, env }, fetcher = fetch) {
+export async function handleContact({ request, env }, fetcher = fetch, guard = allowContact) {
   if (request.method !== 'POST') {
     return new Response('Method not allowed', { status: 405, headers: { ...safeHeaders, Allow: 'POST' } });
   }
@@ -58,28 +77,22 @@ export async function handleContact({ request, env }, fetcher = fetch) {
   try { form = new URLSearchParams(await readBody(request)); }
   catch { return redirect(request, 'invalid'); }
   const field = (key) => form.getAll(key).length === 1 ? form.get(key).trim() : '';
-  if (field('website')) return redirect(request, 'sent');
+  if (form.getAll('website').some(value => value.trim())) return redirect(request, 'sent');
   const name = field('name');
   const email = field('email');
   const message = field('message');
-  const token = field('cf-turnstile-response');
+
   if (!name || name.length > 120 || /[\r\n\x00-\x1f\x7f]/.test(name) ||
       email.length > 254 || !EMAIL.test(email) || /[\x00-\x1f\x7f]/.test(email) ||
       !message || message.length > 5000 || message.includes('\0')) return redirect(request, 'invalid');
-  if (!env.SENDGRID_API_KEY || !env.TURNSTILE_SECRET_KEY) return redirect(request, 'unavailable');
-  if (!token || token.length > 2048) return redirect(request, 'verification');
+  if (!env.SENDGRID_API_KEY) return redirect(request, 'unavailable');
+  const started = Number(field('form_started'));
+  const elapsed = Date.now() - started;
+  if (!Number.isSafeInteger(started) || started <= 0 || elapsed < 3000 || elapsed > 86400000) {
+    return redirect(request, 'verification');
+  }
+  if (!await guard(email)) return redirect(request, 'limited');
   try {
-    const verification = new URLSearchParams({ secret: env.TURNSTILE_SECRET_KEY, response: token });
-    const ip = request.headers.get('CF-Connecting-IP');
-    if (ip) verification.set('remoteip', ip);
-    const challenge = await fetcher('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-      method: 'POST', body: verification, signal: AbortSignal.timeout(8000),
-    });
-    if (!challenge.ok) return redirect(request, 'unavailable');
-    const validation = await challenge.json();
-    if (validation.success !== true || validation.hostname !== url.hostname || validation.action !== 'contact') {
-      return redirect(request, 'verification');
-    }
     const result = await fetcher('https://api.sendgrid.com/v3/mail/send', {
       method: 'POST',
       headers: { Authorization: `Bearer ${env.SENDGRID_API_KEY}`, 'Content-Type': 'application/json' },

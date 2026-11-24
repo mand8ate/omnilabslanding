@@ -33,14 +33,12 @@ After changing the Hostinger settings, redeploy the updated GitHub commit. Confi
 
 Set these in Hostinger's environment settings, not in Git:
 
-- `TURNSTILE_SITE_KEY`: public build-time key for the visible verification widget.
-- `TURNSTILE_SECRET_KEY`: private runtime key for the matching widget.
 - `SENDGRID_API_KEY`: private runtime mail-send key.
 - `PUBLIC_ORIGIN`: `https://omnilabs.digital` in production.
 
-Hostinger supplies `PORT` to the Node process. The local default is 3000. Verify `malte@omnilabs.digital` in SendGrid and allow the production hostname in Turnstile.
+Hostinger supplies `PORT` to the Node process. The local default is 3000. Verify `malte@omnilabs.digital` (or its domain) as a sender in SendGrid. No Turnstile account or keys are needed.
 
-Both languages retain the form even if configuration is missing. English posts to `/api/contact`; Japanese posts to `/api/contact?lang=ja`. `server/app.js` and the Cloudflare Worker both call the shared handler in `functions/api/contact.js`. The handler verifies the token, hostname and action, then uses SendGrid's HTTP API. Private keys never enter the public build. Messages use plain text and fixed sender/recipient addresses, with the visitor email only as Reply-To.
+Both languages retain the form even if configuration is missing. English posts to `/api/contact`; Japanese posts to `/api/contact?lang=ja`. `server/app.js` and the Cloudflare Worker both call the shared handler in `functions/api/contact.js`. The handler checks fields, submission timing and rate limits, then uses SendGrid's HTTP API. Private keys never enter the public build. Messages use plain text and fixed sender/recipient addresses, with the visitor email only as Reply-To.
 
 ## Local development and checks
 
@@ -55,7 +53,7 @@ PUBLIC_ORIGIN=http://localhost:3000 npm start
 
 For local form testing, copy `.env.example` to `.env` and use `npm run dev`. Use dedicated development keys and a test mailbox. Unit tests mock network calls and do not send email.
 
-The Node server applies security headers and cache rules, caps incoming header/body time, supports ETags and denies non-public paths. The contact handler bounds streamed request bodies at 64 KB, validates fields, rejects duplicate fields and cross-origin browser submissions, uses a honeypot and requires server-verified Turnstile tokens. Add hosting-edge request rate limits where available. Provider acceptance is not an inbox-delivery guarantee.
+The Node server applies security headers and cache rules, caps incoming header/body time, supports ETags and denies non-public paths. The contact handler bounds streamed request bodies at 64 KB, validates fields, rejects duplicate fields and cross-origin browser submissions, uses a honeypot and checks submission timing (3 seconds to 24 hours). JavaScript initializes the form timestamp; visitors without JavaScript can use the email link. Server-side limits allow 3 attempts per email and 30 total attempts per 15-minute window. Email limiter keys are SHA-256 hashes; storage is bounded and held only in process memory. Limits reset on restart and are independent across instances. These checks deter basic spam; they are not equivalent to a CAPTCHA service. Add hosting-edge request rate limits where available. Provider acceptance is not an inbox-delivery guarantee.
 
 ## Runtime and dependency maintenance
 

@@ -1,3 +1,2 @@
 # Copy to .dev.vars for local Wrangler only. Never commit actual secrets.
 SENDGRID_API_KEY=
-TURNSTILE_SECRET_KEY=
