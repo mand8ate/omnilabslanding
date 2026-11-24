@@ -1,11 +1,13 @@
 import { readFile } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { handleContact } from '../functions/api/contact.js';
 
 const root = fileURLToPath(new URL('../dist/', import.meta.url));
-const policy = (await readFile(new URL('../_headers', import.meta.url), 'utf8')).match(/Content-Security-Policy: (.+)/)[1];
+// Hostinger's LiteSpeed loader uses require(); keep the startup module graph synchronous.
+const policy = readFileSync(new URL('../_headers', import.meta.url), 'utf8').match(/Content-Security-Policy: (.+)/)[1];
 const security = {
   'Content-Security-Policy': policy,
   'X-Content-Type-Options': 'nosniff',

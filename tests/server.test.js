@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -41,4 +42,19 @@ test('Hostinger contact adapter uses the mail handler without a challenge servic
   assert.equal(count, 1);
   assert.equal(response.status, 303);
   assert.equal(response.headers.get('Location'), 'https://omnilabs.digital/ja/?contact=sent#contact');
+});
+
+
+test('Hostinger can require the server entry without an asynchronous ESM startup graph', () => {
+  const output = execFileSync(process.execPath, ['-e', `
+    const http = require('node:http');
+    // Exercise the real entry module without opening a port or leaving a server running.
+    http.Server.prototype.listen = function(port, host) {
+      if (host !== '0.0.0.0') throw new Error('Unexpected bind host');
+      console.log('hostinger-entry-loaded');
+      return this;
+    };
+    require('./server.js');
+  `], { cwd: new URL('../', import.meta.url), encoding: 'utf8', env: { ...process.env, PUBLIC_ORIGIN: 'https://omnilabs.digital', PORT: '3000' } });
+  assert.match(output, /hostinger-entry-loaded/);
 });
