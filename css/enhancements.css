@@ -194,3 +194,51 @@ header .logo-header-right img { width: 100%; height: auto; object-fit: contain; 
  header .logo-header-right { width: 64px; max-width: 64px; flex-basis: 64px; }
  .language-control select { width: 82px; min-height: 40px; font-size: 11px; padding: .4rem .25rem; }
 }
+
+/* Current and past work share one consistent card layout. */
+.projects-container ul .project-card { margin: 6rem 0 2rem; padding: 2rem 1.75rem; }
+.projects-container ul .project-card .projects-circle { display: grid; place-items: center; width: 136px; height: 136px; margin-top: 0; background: #edf0e6; border-width: 3px; }
+.projects-circle span { font-size: 40px; font-weight: 700; letter-spacing: -.06em; }
+.project-gruen .projects-circle { color: #45614c; }
+.project-hiveminds .projects-circle { color: #393f5f; }
+.project-gamedesk .projects-circle { color: #a84439; }
+.projects-container .project-card .card-content { padding-top: 3rem; }
+.projects-container .project-card .card-title { margin: 0 0 .75rem; font-size: 22px; }
+.projects-container .project-card .status { display: inline-block; padding: .2rem .7rem; margin: 0; border-radius: 99px; background: #ffffff60; font-size: 12px; }
+.projects-container .project-card .card-desc { font-size: 15px; line-height: 1.8; margin-top: 1.25rem; }
+.project-domain { font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+.past-projects { font-size: 13px; color: #393f5f; text-align: center; padding: 1rem 0 2rem; }
+.past-projects a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+@media (min-width: 1000px) {
+ .projects-container .past-projects { margin-bottom: 6rem; }
+}
+
+/* Real website previews and comfortable reading space for current roles. */
+.projects-container ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
+.projects-container ul .project-card { margin: 0; padding: 0; overflow: hidden; text-align: left; border: 1px solid #393f5f28; }
+.projects-container .project-card .card-content { padding: 1.75rem; }
+.project-preview { background: #f5f2e8; }
+.project-preview img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; margin: 0; }
+.project-card:focus-within { outline: 3px solid #393f5f; outline-offset: 5px; }
+.ai-services { background: #393f5f; color: #fff8e6; display: grid; grid-template-columns: 1fr 1.25fr; gap: 4rem; padding: 5rem max(24px, calc((100vw - 1200px) / 2)); text-align: left; position: relative; }
+.ai-services .subtitle { color: #ffe69d; }
+.ai-services h2 { font-size: clamp(2rem, 3vw, 3rem); line-height: 1.25; }
+.ai-services p { line-height: 1.85; }
+.ai-services ul { padding-left: 1.2rem; list-style: disc; line-height: 2; }
+@media (min-width: 1000px) { .ai-services { margin-top: 8rem; } .projects-container { padding-top: 4rem; padding-bottom: 5rem; } }
+@media (max-width: 699px) { .projects-container ul, .ai-services { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; } .projects-container .project-card .card-content { padding: 1.5rem; } }
+section.projects-content { margin: 0; padding: 3rem max(24px, calc((100vw - 1200px) / 2)); }
+section.projects-content .projects-container { transform: none; padding: 0; }
+section.projects-content .projects-container ul { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
+section.projects-content .projects-container ul .project-card { margin: 0; }
+@media (max-width: 699px) { section.projects-content .projects-container ul { grid-template-columns: minmax(0, 1fr); } }
+
+/* Keep all profile text in normal flow below the portrait. */
+.team-content .member-left { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; padding: 2rem 1.5rem; text-align: center; }
+.team-content .member-left > .right { width: 100%; max-width: 720px; min-width: 0; }
+.team-content .member-left .floating-elements { margin: 0 1.5rem 1.5rem; }
+.team-content .member-left h2 { margin: 0 0 .5rem; overflow-wrap: normal; }
+.team-content .member-left .subtitle { margin: 0; line-height: 1.7; }
+.team-content .profile-specialties { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; margin: 1.25rem 0 2rem; }
+.profile-specialties span { padding: .4rem .8rem; border-radius: 6px; background: #ffe69d; color: #393f5f; font-size: 12px; }
+.team-content .member-left p.section-desc { text-align: left; }

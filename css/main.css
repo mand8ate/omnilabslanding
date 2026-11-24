@@ -326,27 +326,12 @@ section img.right {
 .projects-container ul li.one {
   margin-bottom: 7em;
 }
-.projects-container ul li.one .projects-circle {
-  background: url("../img/sbooster_logo.svg"), radial-gradient(rgba(135, 206, 235, 0.5), rgba(135, 206, 235, 0.5));
-  background-blend-mode: overlay;
-  background-size: contain;
-  border-radius: 50%;
-}
 .projects-container ul li.two {
   margin-bottom: 7em;
-}
-.projects-container ul li.two .projects-circle {
-  background: url("../img/mieli_img.jpg");
-  background-size: contain;
 }
 .projects-container ul li.three {
   margin-bottom: 2em;
 }
-.projects-container ul li.three .projects-circle {
-  background: url("../img/ume_img.png");
-  background-size: contain;
-}
-
 .team-content {
   padding-top: 0;
 }
@@ -436,7 +421,7 @@ section.contact img.left {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: linear-gradient(rgba(57, 63, 95, 0.8), rgba(57, 63, 95, 0.8)), url("../img/form_img.jpg") center;
+  background: linear-gradient(rgba(57, 63, 95, 0.8), rgba(57, 63, 95, 0.8)), url("../img/form-2026.jpg") center;
   background-size: cover;
   border-radius: 10px;
   padding: 1em 2em;

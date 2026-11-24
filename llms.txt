@@ -22,3 +22,12 @@ Use the website as the source of truth. Project examples are portfolio reference
 ## Languages
 - [English](https://omnilabs.digital/)
 - [日本語](https://omnilabs.digital/ja/)
+
+## Selected work
+- [Grün](https://gruen.jp/): Malte built the physical shop from concept to execution and currently supports business development as an external consultant.
+- [HiveMinds LLC](https://hiveminds.co.jp/): Malte is CTO. Asian engineering solutions with project management in Japan and engineering in Indonesia, working in English, Japanese, German and Indonesian.
+- [GameDesk](https://staging.gamedesk.space/): player support and live-ops intelligence platform in development; staging preview.
+- [TaleFaber](https://talefaber.com/): interactive AI writing platform in development. Authors define worlds, characters and story points; readers shape and publish their completed story runs.
+
+## AI integration and consulting
+Company AI consulting, LLM workflows, local machine-learning models trained on client business data, data preparation, system integration and evaluation. Deployment and data access are scoped to client operational requirements.

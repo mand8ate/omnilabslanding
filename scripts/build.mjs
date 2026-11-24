@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile, cp, rm, readdir } from 'node:fs/promises';
+import { mkdir, readFile, writeFile, cp, rm } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -42,11 +42,12 @@ for (const name of ['gsap.min.js', 'ScrollTrigger.min.js']) {
   await cp(path.join(root, 'node_modules/gsap/dist', name), path.join(dist, 'js', name));
 }
 await mkdir(path.join(dist, 'img'));
-const originals = new Set(['team_img.png', 'contact_img.png', 'blockchain_img.png', 'services_img.png', 'form_img.png', 'malte_img.png', 'surya.png']);
-for (const name of await readdir(path.join(root, 'img'))) {
-  if (!originals.has(name) && /\.(svg|png|jpe?g|webp|ico)$/.test(name)) {
-    await cp(path.join(root, 'img', name), path.join(dist, 'img', name));
-  }
+const images = new Set(['img/scroll-strand.svg']);
+for (const match of html.matchAll(/(?:src|href)="\/(img\/[^"?#]+)"/g)) images.add(match[1]);
+for (const stylesheet of ['css/main.css', 'css/enhancements.css']) {
+  const css = await readFile(path.join(root, stylesheet), 'utf8');
+  for (const match of css.matchAll(/url\(["']?\.\.\/(img\/[^"')]+)["']?\)/g)) images.add(match[1]);
 }
+for (const asset of images) await cp(path.join(root, asset), path.join(dist, asset));
 await writeFile(path.join(dist, '.assetsignore'), '_routes.json\n');
-console.log('Static site built in dist/. Worker entry point: worker/index.js.');
+console.log('Built public website in dist/. Hostinger Node entry: server.js; Cloudflare Worker entry: worker/index.js.');

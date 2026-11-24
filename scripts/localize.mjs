@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 const translations = JSON.parse(await readFile(new URL('../locales/ja.json', import.meta.url), 'utf8'));
-const retained = new Set(['/', 'omni', '.', 'LABS DIGITAL', 'EN', 'JP', '↗', 'Ⅱ', 'S-Booster 2023', 'mielisweets.com', 'shigeru-umebayashi.com', 'malte@omnilabs.digital', 'Omni', 'Labs Digital']);
+const retained = new Set(['G', 'H', 'GD', 'gruen.jp', 'Hiveminds LLC', 'GameDesk', 'Shigeru Umebayashi', '·', 'gruen.jp ↗', 'hiveminds.co.jp ↗', 'staging.gamedesk.space ↗', '/', 'omni', '.', 'LABS DIGITAL', 'EN', 'JP', '↗', 'Ⅱ', 'S-Booster 2023', 'mielisweets.com', 'shigeru-umebayashi.com', 'malte@omnilabs.digital', 'Omni', 'Labs Digital']);
 const normalize = text => text.replace(/&amp;/g, '&').replace(/&copy;/g, '©').replace(/\s+/g, ' ').trim();
 const escape = text => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 

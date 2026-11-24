@@ -1,83 +1,88 @@
 # Omni Labs Digital
 
-Static HTML/CSS/JavaScript with a JavaScript Cloudflare Worker at `/api/contact`. No PHP, Composer, database or runtime SDK dependencies. SendGrid remains the email provider, accessed through its HTTP API.
+English and Japanese website with GSAP motion, custom SVG illustrations and a JavaScript contact handler. The current deployment target is Hostinger Node.js hosting. The previous Cloudflare Worker adapter remains available.
 
-## Local checks
+## Hostinger deployment settings
 
-Use Node.js 20 or newer:
+| Setting | Value |
+| --- | --- |
+| Framework | Other |
+| Root directory | `./` |
+| Node version | `24.x` |
+| Package manager | npm |
+| Build command | `npm run build` |
+| Output directory | `dist` |
+| Entry file for the Node app | `server.js` |
+| Start command, if requested | `npm start` |
+
+Set the entry file to enable the Node application: publishing static files alone cannot run the contact handler. The Node server always serves only the public files in `dist/`. It does not serve the repository root or a nested `/dist/` URL.
+
+The previous live deployment used **Output directory: none / Entry file: none**. That published the source index at `/` and the generated page under `/dist/index.html`. Its GSAP scripts returned 404 and the scroll SVG placeholder was never expanded. A successful build does not correct an incorrect publishing directory.
+
+After changing the Hostinger settings, redeploy the updated GitHub commit. Confirm:
+
+- `/` and `/ja/` show the generated site.
+- `/js/gsap.min.js` and `/js/ScrollTrigger.min.js` return JavaScript, not an HTML 404 page.
+- The source SVG placeholder `<!-- scroll-strand -->` is absent from the served HTML.
+- `/dist/index.html`, `/server.js`, `/package.json` and dotfiles are not publicly served by the Node entry.
+- A real contact submission passes verification and reaches the intended inbox.
+
+[Hostinger deployment documentation](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/)
+
+## Contact configuration
+
+Set these in Hostinger's environment settings, not in Git:
+
+- `TURNSTILE_SITE_KEY`: public build-time key for the visible verification widget.
+- `TURNSTILE_SECRET_KEY`: private runtime key for the matching widget.
+- `SENDGRID_API_KEY`: private runtime mail-send key.
+- `PUBLIC_ORIGIN`: `https://omnilabs.digital` in production.
+
+Hostinger supplies `PORT` to the Node process. The local default is 3000. Verify `malte@omnilabs.digital` in SendGrid and allow the production hostname in Turnstile.
+
+Both languages retain the form even if configuration is missing. English posts to `/api/contact`; Japanese posts to `/api/contact?lang=ja`. `server/app.js` and the Cloudflare Worker both call the shared handler in `functions/api/contact.js`. The handler verifies the token, hostname and action, then uses SendGrid's HTTP API. Private keys never enter the public build. Messages use plain text and fixed sender/recipient addresses, with the visitor email only as Reply-To.
+
+## Local development and checks
+
+Use Node.js 24 LTS (`.nvmrc` and `package.json` declare this version):
 
 ```sh
 npm ci
 npm test
 npm run build
+PUBLIC_ORIGIN=http://localhost:3000 npm start
 ```
 
-`dist/` contains only public assets. The contact form is always included and posts to `/api/contact` (or `/api/contact?lang=ja`). Set `TURNSTILE_SITE_KEY` before building to enable its spam-verification widget:
+For local form testing, copy `.env.example` to `.env` and use `npm run dev`. Use dedicated development keys and a test mailbox. Unit tests mock network calls and do not send email.
 
-```sh
-TURNSTILE_SITE_KEY=your_public_sitekey npm run build
-cp .dev.vars.example .dev.vars
-npm run dev
-```
+The Node server applies security headers and cache rules, caps incoming header/body time, supports ETags and denies non-public paths. The contact handler bounds streamed request bodies at 64 KB, validates fields, rejects duplicate fields and cross-origin browser submissions, uses a honeypot and requires server-verified Turnstile tokens. Add hosting-edge request rate limits where available. Provider acceptance is not an inbox-delivery guarantee.
 
-Fill `.dev.vars` locally with the private SendGrid API key and Turnstile secret. `npm run dev` uses Cloudflare's Wrangler CLI via npx; the first run may prompt to install it. Never put private keys into HTML or the public build environment. Use a dedicated Turnstile development widget with localhost allowed and a separate SendGrid sandbox account for delivery testing. Unit tests mock network calls and never send email.
+## Runtime and dependency maintenance
 
-A plain static server can preview `dist/`, but cannot execute the function.
+The project targets Node 24 LTS rather than end-of-life Node 20. Select the current patched 24.x runtime in Hostinger; editing `.nvmrc` alone does not change an existing hosted application's selected version.
 
-## Deploy to Cloudflare Workers (recommended for the current setup)
+GSAP is pinned in `package-lock.json`. CI uses SHA-pinned GitHub Actions, Node 24, a clean npm install, an npm vulnerability audit, tests and a production build. A clean npm audit covers known package advisories; it does not audit the hosting runtime or account settings.
 
-The default `wrangler.toml` defines `worker/index.js` as the entry point and `dist/` as static assets. This supports the standard `npx wrangler deploy` command used by Workers Builds. The Worker routes `/api/contact` to the shared contact handler; static assets are served directly.
+## Design and content
 
-In the Worker’s Git build settings use:
+The section artwork is custom code-native SVG in `img/*-art.svg`. The real portrait and original company logos are retained. Only images referenced by the page and active CSS enter `dist/`; old raster source assets stay in the repository.
 
-- Build command: `npm run build`
-- Deploy command: `npx wrangler deploy`
-- Root directory: repository root
-- Node.js: 22
+Featured work:
 
-The existing Cloudflare Worker name must match `name` in `wrangler.toml` (`omnilabs-digital`), or change the config to the name you selected in Cloudflare.
+- gruen.jp — past website work.
+- Hiveminds LLC — current work.
+- GameDesk — product in development; the link is a staging preview.
 
-1. Create a Turnstile widget for the production hostname. Add its public `TURNSTILE_SITE_KEY` to the Worker’s **build variables**. The form stays visible even if this variable is missing; submissions cannot pass verification until the widget and matching runtime secret are configured.
-2. Add `TURNSTILE_SECRET_KEY` and `SENDGRID_API_KEY` as **runtime secrets** in the Worker settings. Configure preview environments separately if needed. Never add private keys to the public HTML or repository. Verify `malte@omnilabs.digital` as a SendGrid sender.
-3. Deploy and test the generated workers.dev address before attaching the domain. Allow that hostname in the Turnstile widget if testing the form there. The function requires verified hostname and action `contact` to match.
-4. Add `omnilabs.digital` as a custom domain only after staging checks pass. Preserve MX, SPF, DKIM and DMARC records. Retain the old site until cutover is verified. The agent does not access Cloudflare automatically; login, deployment, secrets and DNS setup remain user-managed.
-5. Consider an edge rate-limit rule for POST `/api/contact` if available on your plan. Turnstile, origin checks, a honeypot and bounded input are included; there is no in-memory distributed rate-limit counter.
+S-Booster 2023 and Shigeru Umebayashi are earlier projects. Inactive Mieli Sweets is no longer featured as current work.
 
-For a manual CLI deployment, run `npm run deploy` after you authenticate Wrangler yourself. This builds and deploys the site. GitHub CI only validates the repository; Cloudflare Git integration deploys it once configured.
+The original compiled stylesheet is `css/main.css`; current overrides live in `css/enhancements.css`. `js/motion.js` handles GSAP and scroll tracking; `js/index.js` handles the language selector and contact feedback. Public script/style URLs carry content hashes to avoid stale code after a deployment.
 
-### Alternative: Cloudflare Pages
+## Languages and discovery
 
-Pages support remains available through `wrangler.pages.toml` and `functions/api/contact.js`. Create a Pages project with build command `npm run build` and output `dist`; explicitly select `wrangler.pages.toml` for CLI commands:
+English is at `/`, Japanese at `/ja/`. The build applies `locales/ja.json` to the shared source layout, producing full HTML in each language with reciprocal hreflang links, localized metadata and canonical URLs. New visible strings must be translated or explicitly retained as proper names. The native language selector preserves the current section; a noscript fallback provides normal links.
 
-```sh
-npx wrangler pages deploy dist --config wrangler.pages.toml
-```
+`robots.txt`, `sitemap.xml`, `llms.txt` and `llm.txt` assume the canonical hostname `omnilabs.digital`.
 
-Do not use `wrangler deploy` with the Pages config. Do not upload only `dist/` with the dashboard’s static drag-and-drop flow: that does not include Pages Functions. Set the same public build variable and runtime secrets described above.
+## Cloudflare alternative
 
-## Security and behavior
-
-- Worker-first routing covers `/api/*` and retired PHP URLs. Other assets are served directly. Pages uses `_routes.json`; Workers excludes that Pages-only file from public assets.
-- Browser submissions use a standard URL-encoded POST and redirect back to the contact section with a status message. JavaScript is required for Turnstile, with a visible email alternative.
-- Secrets stay in function bindings. Visitor email is used only as Reply-To; sender and recipient are fixed. Messages are plain text.
-- Actual streamed bodies are capped at 64 KB, with field limits, duplicate-field rejection, same-origin checks, verification timeouts and generic delivery errors.
-- `_headers` supplies static response security and cache rules. Function responses set their own headers. Cloudflare manages static compression. Verify response headers and real-world Core Web Vitals after deployment.
-- `_redirects` keeps old PHP URLs pointing to contact. PHP and vendor files are excluded from builds and removed from the source tree. Retire those files on the old host when decommissioning it; a new Pages deployment does not delete files on cPanel.
-
-## Site maintenance
-
-The original stylesheet is `css/main.css`; current overrides are `css/enhancements.css`. SCSS and maps are legacy artifacts, not an active build pipeline. Original large PNGs are retained locally but excluded from deployment in favor of compressed JPGs.
-
-`img/scroll-strand.svg` is embedded by the build and adapted to measured section positions. Its visible leading point is solved from the SVG path’s actual Y coordinate and stays at 72% of viewport height while scrolling, with no scrub or easing delay. The canvas’s actual bounding box supplies the coordinate origin; viewport width and path arc length cannot change tracking speed.
-
-Greensock (GSAP and ScrollTrigger) is pinned in `package-lock.json` and copied into the public build from npm, with no CDN requests. `js/motion.js` handles the hero assembly/ambient motion, pause control and scroll-scrubbed section/footer blocks. `js/index.js` independently handles language selection and contact feedback. Reduced-motion preferences show static graphics. CSS/script URLs carry content hashes to prevent stale animation code after deployment.
-
-`robots.txt`, `sitemap.xml`, `llms.txt` and `llm.txt` assume the canonical URL https://omnilabs.digital/. These improve machine readability without guaranteeing search or AI placement. Review historical portfolio status text before describing it as current work.
-
-References: [Pages Functions](https://developers.cloudflare.com/pages/functions/), [Turnstile server validation](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/), [SendGrid Mail Send](https://www.twilio.com/docs/sendgrid/api-reference/mail-send/mail-send).
-
-## English and Japanese
-
-The build emits English at `/` and Japanese at `/ja/`. The native language dropdown retains the current section anchor when navigating. A noscript fallback provides ordinary language links. No automatic language redirect is imposed. Both pages include reciprocal hreflang links, their own canonical URL and localized metadata.
-
-English content and shared layout live in `index.html`. Japanese copy is in `locales/ja.json`, applied at build time by `scripts/localize.mjs`, so visitors and search crawlers receive complete HTML. New visible English strings must have Japanese translations or be explicitly retained as brand names. Contact feedback, motion controls, input labels and spam verification are localized. Japanese form submissions return to `/ja/#contact`.
+`wrangler.toml` and `worker/index.js` still support Cloudflare Workers with static assets. `wrangler.pages.toml` and `functions/api/contact.js` support Pages. These files are not executed by Hostinger. Cloudflare environment secrets are not automatically transferred to Hostinger.

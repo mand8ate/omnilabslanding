@@ -5,14 +5,16 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node --test",
-    "dev": "npx wrangler dev",
+    "dev": "node --env-file-if-exists=.env server.js",
     "deploy": "npm run build && npx wrangler deploy",
-    "dev:pages": "npx wrangler pages dev dist --config wrangler.pages.toml"
+    "dev:pages": "npx wrangler pages dev dist --config wrangler.pages.toml",
+    "start": "node server.js",
+    "dev:worker": "npx wrangler dev"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24 <25"
   },
   "dependencies": {
-    "gsap": "3.15.0"
+    "gsap": "3.15.1"
   }
 }
